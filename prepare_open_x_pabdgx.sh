@@ -13,14 +13,14 @@ Adjust workers to fit the available memory of your machine, the more workers + e
 The default values are tested with a server with ~120GB of RAM and 24 cores.
 '
 
-DOWNLOAD_DIR="/mnt/petrelfs/gaoyang1/cw/data/robotics/open-x-embodiment/"
-CONVERSION_DIR="/mnt/petrelfs/gaoyang1/cw/data/robotics/tmp/"
+DOWNLOAD_DIR="/home/cwen/data/robotics/open-x-embodiment/"
+CONVERSION_DIR="/home/cwen/data/robotics/tmp/"
 N_WORKERS=20                  # number of workers used for parallel conversion --> adjust based on available RAM
 MAX_EPISODES_IN_MEMORY=200    # number of episodes converted in parallel --> adjust based on available RAM
 
 # increase limit on number of files opened in parallel to 20k --> conversion opens up to 1k temporary files
 # in /tmp to store dataset during conversion
-ulimit -n 20000
+ulimit -S -n 20000
 
 # format: [dataset_name, dataset_version, transforms]
 DATASET_TRANSFORMS=(
@@ -59,7 +59,7 @@ for tuple in "${DATASET_TRANSFORMS[@]}"; do
   TRANSFORM=${strings[2]}
   mkdir ${DOWNLOAD_DIR}/${DATASET}
   gsutil -m cp -r gs://gresearch/robotics/${DATASET}/${VERSION} ${DOWNLOAD_DIR}/${DATASET}
-  srun -p brie3 python3 modify_rlds_dataset.py --dataset=$DATASET --data_dir=$DOWNLOAD_DIR --target_dir=$CONVERSION_DIR --mods=$TRANSFORM --n_workers=$N_WORKERS --max_episodes_in_memory=$MAX_EPISODES_IN_MEMORY
+  python3 modify_rlds_dataset.py --dataset=$DATASET --data_dir=$DOWNLOAD_DIR --target_dir=$CONVERSION_DIR --mods=$TRANSFORM --n_workers=$N_WORKERS --max_episodes_in_memory=$MAX_EPISODES_IN_MEMORY
   rm -rf ${DOWNLOAD_DIR}/${DATASET}
   mv ${CONVERSION_DIR}/${DATASET} ${DOWNLOAD_DIR}
 done

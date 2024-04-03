@@ -24,6 +24,10 @@ flags.DEFINE_integer(
 )
 
 
+# change to 224
+TFDS_MOD_FUNCTIONS["resize_and_jpeg_encode"].MAX_RES = 224
+
+
 def mod_features(features):
     """Modifies feature dict."""
     for mod in FLAGS.mods:
